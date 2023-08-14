@@ -23,6 +23,7 @@ tbl_uvregression(
 							eyesight_cat, income, age_bir),
 	method = lm)
 
+#Q3
 tbl_uvregression(
 	nlsy,
 	x = sex_cat,
@@ -38,6 +39,7 @@ tbl_uvregression(
 	method.args = list(family = binomial()),
 	exponentiate = TRUE)
 
+#Q4
 tbl_uvregression(
 	nlsy,
 	y = glasses,
@@ -61,6 +63,10 @@ linear_model_int <- lm(income ~ sex_cat*age_bir + race_eth_cat,
 logistic_model <- glm(glasses ~ eyesight_cat + sex_cat + income,
 											data = nlsy, family = binomial())
 
+#Q5
+logistic_modelRR <- glm(glasses ~ eyesight_cat + sex_cat,
+												data = nlsy, family = binomial(link = "log"))
+
 
 ## Tables
 
@@ -83,6 +89,14 @@ tbl_regression(
 		income ~ "Income"
 	))
 
+#Q5
+tbl_regression(
+	logistic_modelRR,
+	expontentiate = TRUE,
+	label = list(
+		sex_cat ~ "Sex",
+		eyesight_cat ~ "Eyesight"
+	))
 
 tbl_no_int <- tbl_regression(
 	linear_model,
