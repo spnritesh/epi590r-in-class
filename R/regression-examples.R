@@ -27,7 +27,7 @@ tbl_uvregression(
 tbl_uvregression(
 	nlsy,
 	x = sex_cat,
-	include = c(nsibs, sleep_wkdy, sleep_wknd, income),
+	include = c(nsibs, starts_with("sleep"), income),
 	method = lm)
 
 tbl_uvregression(
@@ -39,14 +39,18 @@ tbl_uvregression(
 	method.args = list(family = binomial()),
 	exponentiate = TRUE)
 
-#Q4
-tbl_uvregression(
-	nlsy,
-	y = glasses,
-	include = c(sex_cat, age_bir, income),
-	method = glm,
-	method.args = list(family = poisson()),
-	exponentiate = TRUE)
+#Q4 Poisson
+poisson_model <- glm(glasses ~ eyesight_cat + sex_cat + income,
+										 data = nlsy, family = poisson())
+
+tbl_regression(
+	poisson_model,
+	exponentiate = TRUE,
+	label = list(
+		sex_cat ~ "Sex",
+		eyesight_cat ~ "Eyesight",
+		income ~ "Income"
+	))
 
 ## Multivariable regressions
 
@@ -63,10 +67,20 @@ linear_model_int <- lm(income ~ sex_cat*age_bir + race_eth_cat,
 logistic_model <- glm(glasses ~ eyesight_cat + sex_cat + income,
 											data = nlsy, family = binomial())
 
-#Q5
-logistic_modelRR <- glm(glasses ~ eyesight_cat + sex_cat,
+#Q5-6
+eyes_binom <- glm(glasses ~ eyesight_cat + sex_cat,
 												data = nlsy, family = binomial(link = "log"))
+eyes_poiss <- glm(glasses ~ eyesight_cat + sex_cat,
+												data = nlsy, family = poisson(link = "log"))
 
+tbl_eyes_binom <- tbl_regression(eyes_binom,
+																 exponentiate = TRUE)
+tbl_eyes_poiss <- tbl_regression(eyes_poiss,
+																 exponentiate = TRUE,
+																 tidy_fun = partial(tidy_robust, vcoc = "HC1"))
+
+tbl_merge(list(tbl_eyes_binom, tbl_eyes_poiss),
+					tab_spanner = c("**binomial**", "**poisson**"))
 
 ## Tables
 
