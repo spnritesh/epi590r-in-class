@@ -42,19 +42,37 @@ tbl_summary(
 	nlsy,
 	by = sex_cat,
 	include = c(sex_cat, race_eth_cat,
-							eyesight_cat, glasses, age_bir),
+						  income, starts_with("sleep")),
 	label = list(
 		race_eth_cat ~ "Race/ethnicity",
 		eyesight_cat ~ "Eyesight",
-		glasses ~ "Wears glasses",
-		age_bir ~ "Age at first birth"
+		income ~ "Income",
+		sleep_wkdy ~ "weekday sleep",
+		sleep_wknd ~ "weekend sleep"
 	),
-	missing_text = "Missing") |>
-	add_p(test = list(all_continuous() ~ "t.test",
-										all_categorical() ~ "chisq.test")) |>
-	add_overall(col_label = "**Total**") |>
-	bold_labels() |>
-	modify_footnote(update = everything() ~ NA) |>
-	modify_header(label = "**Variable**", p.value = "**P**")
+	statistic = list(
+		income ~ "10th {p10}, 90th {90}",
+		starts_with("sleep" ~ "min = {min}; max = {max}"
+	),
+	digits = list(
+		income ~ c(3,3),
+		starts_with("sleep") ~ c(1,1)
+	))%>%
+	add_p() |>
+	add_overall() |>
+	modify_table_styling(
+		columns = label,
+		rows = label == "Race/ethnicity",
+		footnote = "seehttps://www.nlsinfo.org/content/cohorts/nlsy79/topical-guide/household/race-ethnicity-immigration-data"
+	)
 
+
+
+
+#	add_p(test = list(all_continuous() ~ "t.test",
+#										all_categorical() ~ "chisq.test")) |>
+#	add_overall(col_label = "**Total**") |>
+#	bold_labels() |>
+#	modify_footnote(update = everything() ~ NA) |>
+#	modify_header(label = "**Variable**", p.value = "**P**")
 
